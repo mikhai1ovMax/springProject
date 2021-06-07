@@ -39,7 +39,10 @@ dependencies {
 //    implementation 'com.amazonaws:aws-java-sdk-s3'
 
     compileOnly 'org.apache.maven.plugins:maven-compiler-plugin:3.8.1'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
 }
+
 
 test {
     useJUnitPlatform()

@@ -13,9 +13,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,30 +38,17 @@ public class FileService implements GenericService<File> {
     @Override
     public File getById(long id) {
         File file = repository.getById(id);
-        request = GetObjectRequest.builder().bucket(bucketName).key(file.getName()).build();
-        ResponseInputStream<GetObjectResponse> response = client.getObject(request);
-        GetObjectResponse objectResponse = response.response();
-        java.io.File file1 = new java.io.File(filePath + file.getName());
-        try(OutputStream outputStream = new FileOutputStream(file1)) {
-            outputStream.write(response.readAllBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        saveFile(file);
         return file;
     }
+
 
     @Override
     public List<File> getAll() {
         List<File> files = repository.findAll();
         for (var file :
                 files) {
-            request = GetObjectRequest.builder().bucket(bucketName).key(file.getName()).build();
-            response = client.getObject(request);
-            try {
-                file.setContent(new String(response.readAllBytes(), utf8Charset));
-            } catch (IOException e) {
-                file.setContent("no saved data");
-            }
+            saveFile(file);
         }
         return files;
     }
@@ -78,7 +63,6 @@ public class FileService implements GenericService<File> {
         client.putObject(putObjectRequest, path);
         java.io.File file = new java.io.File(filePath + object.getName());
         file.delete();
-
         return repository.save(object);
     }
 
@@ -91,5 +75,16 @@ public class FileService implements GenericService<File> {
                 .build();
         client.deleteObject(deleteObjectRequest);
         repository.deleteById(id);
+    }
+
+    private void saveFile(File file) {
+        request = GetObjectRequest.builder().bucket(bucketName).key(file.getName()).build();
+        response = client.getObject(request);
+        java.io.File savedFile = new java.io.File(filePath + file.getName());
+        try(OutputStream outputStream = new FileOutputStream(savedFile)){
+            outputStream.write(response.readAllBytes());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
