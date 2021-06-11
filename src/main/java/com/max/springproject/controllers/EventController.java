@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/v1/events")
 public class EventController {
     private final EventService service;
 
@@ -14,23 +15,23 @@ public class EventController {
         this.service = service;
     }
 
-    @GetMapping("/events")
+    @GetMapping
     public String getEvents() {
         return service.getAll().toString();
     }
 
-    @GetMapping("/event/{id}")
+    @GetMapping("/{id}")
     public String getUserById(@PathVariable("id") long id){
         return service.getById(id).toString();
     }
 
-    @PostMapping("/events")
+    @PostMapping
     public String saveEvent(@ModelAttribute("event") Event event) {
         service.save(event);
         return service.getAll().toString();
     }
 
-    @DeleteMapping("/events/{id}")
+    @DeleteMapping("/{id}")
     public String deleteEvent(@PathVariable("id") long id) {
         service.deleteById(id);
         return service.getAll().toString();

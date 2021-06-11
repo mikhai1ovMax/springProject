@@ -18,6 +18,7 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("/v1/files")
 public class FileController {
     private final FileService service;
     private String filePath = "src/main/resources/files/";
@@ -40,7 +41,7 @@ public class FileController {
 //        return fileSystemResources;
 //    }
 
-    @GetMapping("/files/{id}")
+    @GetMapping("/{id}")
     public FileSystemResource getById(@PathVariable("id") long id){
         File file = service.getById(id);
         java.io.File savedFile = new java.io.File(filePath + file.getName());
@@ -48,7 +49,7 @@ public class FileController {
         return new FileSystemResource(savedFile);
     }
 
-    @PostMapping("/files")
+    @PostMapping
     public String getById(@RequestParam("file") MultipartFile file){
         File object = new File();
         object.setName(file.getOriginalFilename());
@@ -63,7 +64,7 @@ public class FileController {
     }
 
 
-    @DeleteMapping("/files/{id}")
+    @DeleteMapping("/{id}")
     public String deleteEvent(@PathVariable("id") long id) {
         service.deleteById(id);
         return service.getAll().toString();

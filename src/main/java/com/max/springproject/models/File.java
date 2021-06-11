@@ -18,8 +18,6 @@ public class File {
     private long id;
     @Column(name = "location")
     private String location;
-    @Column(name = "content")
-    private String content;
     @Column(name = "name")
     private String name;
 

@@ -17,6 +17,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @Column(name = "user_status")
+    @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
     @Column(name = "first_name")
     private String first_name;
