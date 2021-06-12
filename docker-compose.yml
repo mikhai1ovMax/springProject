@@ -1,0 +1,13 @@
+version: 20.10.6
+services:
+  db:
+    image: mysql
+    restart: always
+    ports:
+    - "3307:3307"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1111
+      MYSQL_DATABASE: springProgectDB
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 1111
+

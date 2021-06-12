@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/events")
+@RequestMapping("/api/v1/events")
 public class EventController {
     private final EventService service;
 

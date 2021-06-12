@@ -18,7 +18,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/v1/files")
+@RequestMapping("/api/v1/files")
 public class FileController {
     private final FileService service;
     private String filePath = "src/main/resources/files/";
