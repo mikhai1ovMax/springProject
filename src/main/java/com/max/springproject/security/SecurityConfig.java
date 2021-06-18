@@ -1,5 +1,7 @@
 package com.max.springproject.security;
 
+import com.max.springproject.models.UserStatus;
+import com.max.springproject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,15 +15,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Autowired
-    public SecurityConfig(PasswordEncoder passwordEncoder) {
+    public SecurityConfig(PasswordEncoder passwordEncoder, UserService userService) {
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Override
@@ -48,26 +55,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {
-        UserDetails admin = User.builder()
+        List<UserDetails> userDetailsList = new ArrayList<>();
+        userDetailsList.add( User.builder()
                 .username("admin")
                 .password(passwordEncoder.encode("1111"))
                 .roles("ADMIN")
-                .build();
+                .build());
 
-        UserDetails moderator = User.builder()
+        userDetailsList.add(User.builder()
                 .username("moderator")
                 .password(passwordEncoder.encode("1111"))
                 .roles("MODERATOR")
-                .build();
+                .build());
 
-        UserDetails user = User.builder()
+        userDetailsList.add(User.builder()
                 .username("user")
                 .password(passwordEncoder.encode("1111"))
                 .roles("USER")
-                .build();
+                .build());
+
+        userService.getAll().forEach(x -> {
+            if(x.getUserStatus() == UserStatus.ACTIVE){
+                userDetailsList.add(
+                        User.builder()
+                        .username(x.getName())
+                        .password(passwordEncoder.encode(x.getPassword()))
+                        .roles(String.valueOf(x.getRole()))
+                        .build()
+                );
+            }
+        });
 
 
-        return new InMemoryUserDetailsManager(admin, moderator, user);
+        return new InMemoryUserDetailsManager(userDetailsList);
     }
 
 }
