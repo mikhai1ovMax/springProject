@@ -3,6 +3,7 @@ package com.max.springproject.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -25,7 +26,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .mvcMatchers(HttpMethod.GET, "/api/v1/events", "/api/v1/files").hasAnyRole("USER", "ADMIN")
+                .mvcMatchers(HttpMethod.DELETE, "/api/v1/files").hasAnyRole("MODERATOR", "ADMIN")
+                .mvcMatchers(HttpMethod.PUT, "/api/v1/files").hasAnyRole("MODERATOR", "ADMIN")
+                .mvcMatchers("/api/v1/users/").hasRole("ADMIN")
+                .mvcMatchers(HttpMethod.DELETE,  "/api/v1/events").hasAnyRole("ADMIN")
+                .mvcMatchers(HttpMethod.PUT,  "/api/v1/events").hasAnyRole("ADMIN")
+
+
+//                .antMatchers("/api/v1/events/**", "/api/v1/files/**").hasAnyRole("USER", "ADMIN")
+//                .antMatchers("/api/v1/files/**", "/api/v1/users/**").hasAnyRole("MODERATOR", "ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -43,17 +56,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         UserDetails moderator = User.builder()
                 .username("moderator")
-                .password(passwordEncoder.encode("2222"))
+                .password(passwordEncoder.encode("1111"))
                 .roles("MODERATOR")
                 .build();
 
         UserDetails user = User.builder()
                 .username("user")
-                .password(passwordEncoder.encode("3333"))
+                .password(passwordEncoder.encode("1111"))
                 .roles("USER")
                 .build();
 
 
         return new InMemoryUserDetailsManager(admin, moderator, user);
     }
+
 }
