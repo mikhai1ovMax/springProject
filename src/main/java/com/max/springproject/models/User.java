@@ -34,5 +34,14 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     List<Event> events;
 
-
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", userStatus=" + userStatus +
+                ", role=" + role +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

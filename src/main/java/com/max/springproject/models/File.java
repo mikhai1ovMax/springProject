@@ -21,4 +21,12 @@ public class File {
     @Column(name = "name")
     private String name;
 
+    @Override
+    public String toString() {
+        return "File{" +
+                "id=" + id +
+                ", location='" + location + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

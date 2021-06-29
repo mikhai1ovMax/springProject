@@ -1,5 +1,8 @@
 package com.max.springproject.services;
-;
+
+import com.amazonaws.services.s3.model.AccessControlList;
+import com.amazonaws.services.s3.model.GroupGrantee;
+import com.amazonaws.services.s3.model.Permission;
 import com.max.springproject.models.File;
 import com.max.springproject.repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,40 +34,49 @@ public class FileService implements GenericService<File> {
 
     @Autowired
     public FileService(FileRepository repository) {
-        this.repository = repository;
-        client = S3Client.builder().region(Region.EU_NORTH_1).build();
+        setRepository(repository);
+        setS3Client(S3Client.builder().region(Region.EU_NORTH_1).build());
     }
+
+    public void setRepository(FileRepository repository){
+        this.repository = repository;
+    }
+
+    public void setS3Client(S3Client client){
+        this.client = client;
+    }
+
+    @Override
+    public List<File> getAll() {
+        return repository.findAll();
+    }
+
 
     @Override
     public File getById(long id) {
         File file = repository.getById(id);
-        saveFile(file);
         return file;
     }
 
 
     @Override
-    public List<File> getAll() {
-        List<File> files = repository.findAll();
-        for (var file :
-                files) {
-            saveFile(file);
-        }
-        return files;
-    }
-
-    @Override
     public File save(File object) {
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder().
-                bucket(bucketName).
-                key(object.getName()).
-                build();
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(object.getName())
+                .build();
         Path path = Paths.get(filePath + object.getName());
-        client.putObject(putObjectRequest, path);
-        java.io.File file = new java.io.File(filePath + object.getName());
-        file.delete();
+        AccessControlList acl = new AccessControlList();
+        acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
+        client.putObject(putObjectRequest, path).bucketKeyEnabled();
+        path.toFile().delete();
         return repository.save(object);
     }
+
+//    @Override
+//    public File save(File object) {
+//        return null;
+//    }
 
     @Override
     public void deleteById(long id) {
@@ -77,14 +89,4 @@ public class FileService implements GenericService<File> {
         repository.deleteById(id);
     }
 
-    private void saveFile(File file) {
-        request = GetObjectRequest.builder().bucket(bucketName).key(file.getName()).build();
-        response = client.getObject(request);
-        java.io.File savedFile = new java.io.File(filePath + file.getName());
-        try(OutputStream outputStream = new FileOutputStream(savedFile)){
-            outputStream.write(response.readAllBytes());
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
 }

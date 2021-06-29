@@ -21,14 +21,13 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public String getUserById(@PathVariable("id") long id){
+    public String getEventById(@PathVariable("id") long id){
         return service.getById(id).toString();
     }
 
     @PostMapping
     public String saveEvent(@ModelAttribute("event") Event event) {
-        service.save(event);
-        return service.getAll().toString();
+        return service.save(event).toString();
     }
 
     @DeleteMapping("/{id}")

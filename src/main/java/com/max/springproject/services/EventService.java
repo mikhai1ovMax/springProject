@@ -13,9 +13,13 @@ public class EventService implements GenericService<Event> {
 
     @Autowired
     public EventService(EventRepository repository) {
-        this.repository = repository;
+        setRepository(repository);
     }
 
+
+    public void setRepository(EventRepository repository){
+        this.repository = repository;
+    }
 
     @Override
     public Event getById(long id) {

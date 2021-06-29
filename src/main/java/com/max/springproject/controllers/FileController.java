@@ -22,6 +22,7 @@ import java.util.List;
 public class FileController {
     private final FileService service;
     private String filePath = "src/main/resources/files/";
+    private java.io.File savedFile;
 
 
     @Autowired
@@ -29,28 +30,22 @@ public class FileController {
         this.service = service;
     }
 
-    //TODO
-//    @GetMapping("/files")
-//    public List<FileSystemResource> getFiles(){
-//        List<FileSystemResource> fileSystemResources = new ArrayList<>();
-//        List<File> files = service.getAll();
-//        for (var file :
-//                files) {
-//            fileSystemResources.add(new FileSystemResource(new java.io.File(filePath + file.getName())));
-//        }
-//        return fileSystemResources;
-//    }
+    @GetMapping("/files")
+    public List<String> getFiles(){
+        List<String> links = new ArrayList<>();
+        for (File file : service.getAll()){
+            links.add(file.getLocation());
+        }
+        return links;
+    }
 
     @GetMapping("/{id}")
-    public FileSystemResource getById(@PathVariable("id") long id){
-        File file = service.getById(id);
-        java.io.File savedFile = new java.io.File(filePath + file.getName());
-        FileSystemResource resource = new FileSystemResource(savedFile);
-        return new FileSystemResource(savedFile);
+    public String getById(@PathVariable("id") long id){
+        return service.getById(id).getLocation();
     }
 
     @PostMapping
-    public String getById(@RequestParam("file") MultipartFile file){
+    public String setById(@RequestParam("file") MultipartFile file){
         File object = new File();
         object.setName(file.getOriginalFilename());
         java.io.File savedFile = new java.io.File(filePath + file.getOriginalFilename());

@@ -12,6 +12,10 @@ public class UserController {
 
     @Autowired
     public UserController(UserService service) {
+        setService(service);
+    }
+
+    public void setService(UserService service){
         this.service = service;
     }
 
@@ -27,8 +31,7 @@ public class UserController {
 
     @PostMapping
     public String saveUser(@ModelAttribute("user") User user) {
-        service.save(user);
-        return service.getAll().toString();
+        return service.save(user).toString();
     }
 
     @DeleteMapping("/{id}")

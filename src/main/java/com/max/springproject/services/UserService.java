@@ -1,6 +1,7 @@
 package com.max.springproject.services;
 
 import com.max.springproject.models.User;
+import com.max.springproject.repositories.EventRepository;
 import com.max.springproject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,10 @@ public class UserService implements GenericService<User> {
 
     @Autowired
     public UserService(UserRepository repository) {
+        setRepository(repository );
+    }
+
+    public void setRepository(UserRepository repository){
         this.repository = repository;
     }
 
