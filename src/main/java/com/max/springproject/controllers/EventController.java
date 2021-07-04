@@ -5,6 +5,8 @@ import com.max.springproject.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
+
 @RestController
 @RequestMapping("/api/v1/events")
 public class EventController {
@@ -35,4 +37,5 @@ public class EventController {
         service.deleteById(id);
         return service.getAll().toString();
     }
+
 }

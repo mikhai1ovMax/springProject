@@ -40,4 +40,8 @@ public class UserService implements GenericService<User> {
     public void deleteById(long id) {
         repository.deleteById(id);
     }
+
+    public User findByName(String name){
+        return repository.findByName(name);
+    }
 }
