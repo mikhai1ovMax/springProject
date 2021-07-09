@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
@@ -33,7 +34,8 @@ class UserControllerTest {
 
     private UserService service = Mockito.mock(UserService.class);
     private UserController controller =  new UserController(service);
-
+    User user = new User(123, "Ivan", UserStatus.ACTIVE, UserRole.ADMIN, "123", Arrays.asList(new Event()));
+    List<User> users = Arrays.asList(user);
 
     @Test
     void authTest() throws Exception {
@@ -45,7 +47,7 @@ class UserControllerTest {
 
     @Test
     @WithUserDetails("admin")
-    void getUsers() throws Exception {
+    void getUsersAuthTest() throws Exception {
         mockMvc.perform(get("/api/v1/users"))
                 .andDo(print())
                 .andExpect(authenticated())
@@ -55,11 +57,23 @@ class UserControllerTest {
 
     @Test
     @WithUserDetails("admin")
-    void getUserById() throws Exception {
+    void getUserByIdAuth() throws Exception {
         mockMvc.perform(get("/api/v1/users/1"))
                 .andDo(print())
                 .andExpect(authenticated())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getUsers() {
+        Mockito.when(service.getAll()).thenReturn(users);
+        assertEquals(users.toString(), controller.getUsers());
+    }
+
+    @Test
+    void getUser() {
+        Mockito.when(service.getById(1l)).thenReturn(user);
+        assertEquals(user.toString(), controller.getUserById(1l));
     }
 
     @Test

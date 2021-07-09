@@ -30,9 +30,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private static final String ADMIN_ENDPOINT="/api/v1/admin/**";
-    private static final String LOGIN_ENDPOINT="/api/v1/auth/login";
-
     @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
@@ -52,11 +49,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(LOGIN_ENDPOINT).permitAll()
-                .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
+                .antMatchers("/api/v1/auth/login").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/api/v1/events", "/api/v1/files").hasAnyRole("USER", "ADMIN")
                 .mvcMatchers(HttpMethod.DELETE, "/api/v1/files").hasAnyRole("MODERATOR", "ADMIN")
-                .mvcMatchers(HttpMethod.PUT, "/api/v1/files").hasAnyRole("MODERATOR", "ADMIN")
+                .mvcMatchers(HttpMethod.PUT,  "/api/v1/files").hasAnyRole("MODERATOR", "ADMIN")
                 .mvcMatchers("/api/v1/users/").hasRole("ADMIN")
                 .mvcMatchers(HttpMethod.DELETE,  "/api/v1/events").hasAnyRole("ADMIN")
                 .mvcMatchers(HttpMethod.PUT,  "/api/v1/events").hasAnyRole("ADMIN")
